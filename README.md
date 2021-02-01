@@ -64,3 +64,6 @@ As always, commit and push your code.
 
 ## Relevant Links
 
+- [Javadoc deeplearning4j-core](https://javadoc.io/doc/org.deeplearning4j/deeplearning4j-core/latest/index.html)
+- [Javadoc deeplearning4j-nn](https://javadoc.io/doc/org.deeplearning4j/deeplearning4j-nn/latest/index.html)
+- [Amazon Reviews for Sentiment Analysis](https://www.kaggle.com/bittlingmayer/amazonreviews)
