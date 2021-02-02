@@ -23,6 +23,7 @@ import org.nd4j.linalg.api.ndarray.INDArray;
 import org.nd4j.linalg.dataset.SplitTestAndTrain;
 import org.nd4j.linalg.dataset.api.DataSet;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
+import org.nd4j.linalg.learning.config.Adam;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
 
 public class Titanic {
@@ -71,14 +72,25 @@ public class Titanic {
 		long seed = 6;
 
 		// create the network layout
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).activation(Activation.ELU).list()
-				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(512).dropOut(0.9).l2(0.01).build())
-				.layer(new DenseLayer.Builder().nIn(512).nOut(512).dropOut(0.9).l2(0.01).build())
-				.layer(new DenseLayer.Builder().nIn(512).nOut(512).dropOut(0.9).l2(0.01).build())
-				.layer(new DenseLayer.Builder().nIn(512).nOut(512).dropOut(0.9).l2(0.01).build())
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+				.seed(seed).activation(Activation.ELU).updater(new Adam()).list()
+				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(512).dropOut(0.9).l2(0.001).build())
+				.layer(new DenseLayer.Builder().nIn(512).nOut(512).dropOut(0.9).l2(0.001).build())
+				.layer(new DenseLayer.Builder().nIn(512).nOut(512).dropOut(0.9).l2(0.001).build())
+				.layer(new DenseLayer.Builder().nIn(512).nOut(512).dropOut(0.9).l2(0.001).build())
+				.layer(new DenseLayer.Builder().nIn(512).nOut(512).dropOut(0.9).l2(0.001).build())
 				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD).activation(Activation.SOFTMAX)
 						.nIn(512).nOut(outputNum).build())
 				.build();
+		
+//		========================Evaluation Metrics========================
+//				 # of classes:    2
+//				 Accuracy:        0,8173
+//				 Precision:       0,7949
+//				 Recall:          0,7381
+//				 F1 Score:        0,7654
+//				Precision, recall & F1: reported for positive class (class 1 - "1") only
+
 
 		// Create model
 		MultiLayerNetwork model = new MultiLayerNetwork(conf);
