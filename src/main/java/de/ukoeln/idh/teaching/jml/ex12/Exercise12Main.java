@@ -25,6 +25,7 @@ import org.datavec.api.transform.transform.string.StringListToCountsNDArrayTrans
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
@@ -66,9 +67,21 @@ public class Exercise12Main {
 		int rngSeed = 123;
 		int numColumns = vocabulary.size();
 
+		/*
+		 * MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
+		 * .seed(rngSeed).list().layer(new
+		 * OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+		 * .nIn(numColumns).nOut(2).activation(Activation.SOFTMAX).build())
+		 * .validateOutputLayerConfig(true).build(); MultiLayerNetwork network = new
+		 * MultiLayerNetwork(conf); network.init();
+		 */
+		
+		//adding SIGMOID (toggle this to block comment and uncomment ll. 70-77 to inactivate the following)
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-				.seed(rngSeed).list().layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-						.nIn(numColumns).nOut(2).activation(Activation.SOFTMAX).build())
+				.seed(rngSeed).list()
+				.layer(new DenseLayer.Builder().nIn(numColumns).nOut(400).activation(Activation.SIGMOID).build())
+		        .layer(new DenseLayer.Builder().nIn(400).nOut(100).activation(Activation.TANH).build())
+		        .layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD).nIn(100).nOut(2).activation(Activation.SOFTMAX).build())
 				.validateOutputLayerConfig(true).build();
 		MultiLayerNetwork network = new MultiLayerNetwork(conf);
 		network.init();

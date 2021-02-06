@@ -71,13 +71,26 @@ public class Titanic {
 		long seed = 6;
 
 		// create the network layout
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).list()
-				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).activation(Activation.SOFTMAX)
-						.nIn(100).nOut(outputNum).build())
-				.build();
+		/*
+		 * MultiLayerConfiguration conf = new
+		 * NeuralNetConfiguration.Builder().seed(seed).list() .layer(new
+		 * DenseLayer.Builder().nIn(numInputs).nOut(100).build()) .layer(new
+		 * DenseLayer.Builder().nIn(100).nOut(100).build()) .layer(new
+		 * DenseLayer.Builder().nIn(100).nOut(100).build()) .layer(new
+		 * OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).activation(Activation.
+		 * SOFTMAX) .nIn(100).nOut(outputNum).build()) .build();
+		 */
+		
+		 // create the network layout (toggle block comment and uncomment ll. 74-81 in order to inactivate this)
+	    MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
+	        .activation(Activation.TANH)
+	        .list()
+	        .layer(new DenseLayer.Builder().nIn(numInputs).nOut(10).build())
+	        .layer(new DenseLayer.Builder().nIn(10).nOut(400).build())
+	        .layer(new DenseLayer.Builder().nIn(400).nOut(100).build())
+	        .layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD).activation(Activation.SOFTMAX)
+	            .nIn(100).nOut(outputNum).build())
+	        .build();
 
 		// Create model
 		MultiLayerNetwork model = new MultiLayerNetwork(conf);
