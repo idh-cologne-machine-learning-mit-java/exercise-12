@@ -63,6 +63,8 @@ public class Titanic {
 
 		// number of input features
 		final int numInputs = tp.getFinalSchema().numColumns() - 1;
+		
+		System.out.println(numInputs);
 
 		// number of output categories
 		int outputNum = allData.numOutcomes();
@@ -72,17 +74,17 @@ public class Titanic {
 
 		// create the network layout
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).list()
-				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).activation(Activation.SOFTMAX)
-						.nIn(100).nOut(outputNum).build())
+				.layer(new DenseLayer.Builder().activation(Activation.TANH).nIn(numInputs).nOut(50).build())
+				.layer(new DenseLayer.Builder().activation(Activation.TANH).nIn(50).nOut(30).build())
+				.layer(new DenseLayer.Builder().activation(Activation.TANH).nIn(30).nOut(10).build())
+				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.XENT).activation(Activation.SIGMOID)
+						.nIn(10).nOut(outputNum).build())
 				.build();
 
 		// Create model
 		MultiLayerNetwork model = new MultiLayerNetwork(conf);
 		model.init();
-		model.setListeners(new ScoreIterationListener(10));
+		model.setListeners(new ScoreIterationListener(100));
 
 		// start training of 1000 epochs
 		for (int i = 0; i < 1000; i++) {
