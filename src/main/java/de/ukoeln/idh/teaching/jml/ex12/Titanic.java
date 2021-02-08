@@ -11,10 +11,14 @@ import org.datavec.api.transform.schema.Schema;
 import org.datavec.api.transform.transform.categorical.CategoricalToIntegerTransform;
 import org.datavec.api.transform.transform.column.RemoveColumnsTransform;
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
+import org.deeplearning4j.nn.api.OptimizationAlgorithm;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration.Builder;
+import org.deeplearning4j.nn.conf.NeuralNetConfiguration.ListBuilder;
 import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
+import org.deeplearning4j.nn.conf.layers.Upsampling1D;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.nd4j.evaluation.classification.Evaluation;
@@ -70,14 +74,50 @@ public class Titanic {
 		// seed value for the RNG, fixed for reproducibility
 		long seed = 6;
 
+		// 7 Starting classes
+		int internalSize = numInputs*numInputs*outputNum;
 		// create the network layout
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).list()
-				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).activation(Activation.SOFTMAX)
-						.nIn(100).nOut(outputNum).build())
-				.build();
+		ListBuilder nnBuilder = new NeuralNetConfiguration
+				.Builder()
+				.seed(seed)
+//			    .optimizationAlgo(OptimizationAlgorithm.STOCHASTIC_GRADIENT_DESCENT)
+				.list();
+		
+		// Expand two numInputs*numInputs
+		nnBuilder.layer(
+			new DenseLayer.Builder()
+				.nIn(numInputs)
+				.nOut(internalSize)
+				.build()
+		);
+
+		
+		nnBuilder.layer(
+			new DenseLayer.Builder()
+				.nIn(internalSize)
+				.nOut(internalSize)
+				.activation(Activation.TANH)
+				.build()
+		);
+		
+		nnBuilder.layer(
+		new DenseLayer.Builder()
+				.nIn(internalSize)
+				.nOut(internalSize)
+				.activation(Activation.ELU)
+				.build()
+		);
+
+		// outputlayer
+		nnBuilder.layer(
+			new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT)
+			.activation(Activation.SOFTMAX)
+			.nIn(internalSize)
+			.nOut(outputNum)
+			.build()
+		);
+		
+		MultiLayerConfiguration conf = nnBuilder.build();
 
 		// Create model
 		MultiLayerNetwork model = new MultiLayerNetwork(conf);
