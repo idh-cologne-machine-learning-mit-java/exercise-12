@@ -74,10 +74,10 @@ public class Titanic {
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
 				.activation(Activation.TANH)
 				.list()
-				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(50).build())
-				.layer(new DenseLayer.Builder().nIn(50).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).activation(Activation.SOFTMAX)
+				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(10).build())
+				.layer(new DenseLayer.Builder().nIn(10).nOut(200).build())
+				.layer(new DenseLayer.Builder().nIn(200).nOut(100).build())
+				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD).activation(Activation.SOFTMAX)
 						.nIn(100).nOut(outputNum).build())
 				.build();
 
