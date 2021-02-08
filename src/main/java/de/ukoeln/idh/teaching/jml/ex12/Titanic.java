@@ -71,13 +71,20 @@ public class Titanic {
 		long seed = 6;
 
 		// create the network layout
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).list()
-				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).activation(Activation.SOFTMAX)
-						.nIn(100).nOut(outputNum).build())
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed)
+				.activation(Activation.RELU)
+				.list()
+				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(10).build())
+				.layer(new DenseLayer.Builder().nIn(10).nOut(300).build())
+				.layer(new DenseLayer.Builder().nIn(300).nOut(50).build())
+				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MSE).activation(Activation.SIGMOID)
+						.nIn(50).nOut(outputNum).build())
 				.build();
+		
+		/*Accuracy:        0.7212
+		 Precision:       0.7391
+		 Recall:          0.4250
+		 F1 Score:        0.5397*/
 
 		// Create model
 		MultiLayerNetwork model = new MultiLayerNetwork(conf);
