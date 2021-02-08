@@ -32,6 +32,7 @@ import org.nd4j.evaluation.classification.Evaluation;
 import org.nd4j.linalg.activations.Activation;
 import org.nd4j.linalg.dataset.api.iterator.DataSetIterator;
 import org.nd4j.linalg.lossfunctions.LossFunctions;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
 
 public class Exercise12Main {
 
@@ -67,8 +68,11 @@ public class Exercise12Main {
 		int numColumns = vocabulary.size();
 
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-				.seed(rngSeed).list().layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-						.nIn(numColumns).nOut(2).activation(Activation.SOFTMAX).build())
+				.seed(rngSeed).list()
+				.layer(new DenseLayer.Builder().nIn(numColumns).nOut(200).activation(Activation.SIGMOID).build())
+				.layer(new DenseLayer.Builder().nIn(200).nOut(100).activation(Activation.TANH).build())
+				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+						.nIn(100).nOut(2).activation(Activation.SOFTMAX).build())
 				.validateOutputLayerConfig(true).build();
 		MultiLayerNetwork network = new MultiLayerNetwork(conf);
 		network.init();
