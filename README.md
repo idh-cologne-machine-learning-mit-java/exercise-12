@@ -1,4 +1,4 @@
-# Exercise 11: DL4J
+# Exercise 12: DL4J
 
 
 This exercise has the goal of training and evaluating two neural artificial neural networks.
