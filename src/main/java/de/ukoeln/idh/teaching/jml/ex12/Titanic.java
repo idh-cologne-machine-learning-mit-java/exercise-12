@@ -7,9 +7,11 @@ import org.datavec.api.records.reader.impl.csv.CSVRecordReader;
 import org.datavec.api.records.reader.impl.transform.TransformProcessRecordReader;
 import org.datavec.api.split.FileSplit;
 import org.datavec.api.transform.TransformProcess;
+
 import org.datavec.api.transform.schema.Schema;
 import org.datavec.api.transform.transform.categorical.CategoricalToIntegerTransform;
 import org.datavec.api.transform.transform.column.RemoveColumnsTransform;
+
 import org.deeplearning4j.datasets.datavec.RecordReaderDataSetIterator;
 import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
@@ -41,6 +43,7 @@ public class Titanic {
 				.addColumnsInteger("SipSp", "Parch").addColumnsString("Ticket").addColumnDouble("Fare")
 				.addColumnsString("Cabin").addColumnCategorical("Embarked", "C", "S", "Q", "").build();
 
+
 		// transformation: remove string and unhelpful columns, transform
 		// categories into int values
 		TransformProcess tp = new TransformProcess.Builder(dataSchema)
@@ -71,12 +74,18 @@ public class Titanic {
 		long seed = 6;
 
 		// create the network layout
+		/* results with this config:
+		 *  # of classes:    2
+ 		 * Accuracy:        0,6154
+ 		 * Precision:       0,5301
+		 * Recall:          0,6769
+ 		 * F1 Score:        0,5946
+ 		*/
 		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(seed).list()
-				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
-				.layer(new DenseLayer.Builder().nIn(100).nOut(100).build())
+				.layer(new DenseLayer.Builder().nIn(numInputs).nOut(10).activation(Activation.SIGMOID).build())
+				.layer(new DenseLayer.Builder().nIn(10).nOut(2).dropOut(0.2).build())
 				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.MCXENT).activation(Activation.SOFTMAX)
-						.nIn(100).nOut(outputNum).build())
+						.nIn(2).nOut(outputNum).build())
 				.build();
 
 		// Create model

@@ -27,6 +27,7 @@ import org.deeplearning4j.nn.conf.MultiLayerConfiguration;
 import org.deeplearning4j.nn.conf.NeuralNetConfiguration;
 import org.deeplearning4j.nn.conf.layers.OutputLayer;
 import org.deeplearning4j.nn.multilayer.MultiLayerNetwork;
+import org.deeplearning4j.nn.conf.layers.DenseLayer;
 import org.deeplearning4j.optimize.listeners.ScoreIterationListener;
 import org.nd4j.evaluation.classification.Evaluation;
 import org.nd4j.linalg.activations.Activation;
@@ -66,9 +67,13 @@ public class Exercise12Main {
 		int rngSeed = 123;
 		int numColumns = vocabulary.size();
 
-		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder()
-				.seed(rngSeed).list().layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
-						.nIn(numColumns).nOut(2).activation(Activation.SOFTMAX).build())
+		MultiLayerConfiguration conf = new NeuralNetConfiguration.Builder().seed(rngSeed).list()
+				/* did not test beforehand, as it is really slow on laptop even with the small dataset
+				* but accuracy is now even worse with 0.8093*/
+				.layer(new DenseLayer.Builder().nIn(numColumns).nOut(200).activation(Activation.SIGMOID).build())
+				.layer(new DenseLayer.Builder().nIn(200).nOut(100).activation(Activation.TANH).build())
+				.layer(new OutputLayer.Builder(LossFunctions.LossFunction.NEGATIVELOGLIKELIHOOD)
+						.nIn(100).nOut(2).activation(Activation.SOFTMAX).build())
 				.validateOutputLayerConfig(true).build();
 		MultiLayerNetwork network = new MultiLayerNetwork(conf);
 		network.init();
